@@ -4,7 +4,6 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 var mustache = require('mustache-express')
@@ -32,7 +31,13 @@ app.use(express.static(path.join(__dirname, 'public')));
   app.use(express.errorHandler());
 // }
 
-app.get('/', routes.index);
+app.get('/', function(req, res, next){
+  res.render('index.mustache', { title: 'Express' });
+});
+
+app.get('/map', function(req, res, next){
+  res.send('hey thurr')
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
