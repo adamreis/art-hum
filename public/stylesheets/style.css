@@ -7,6 +7,10 @@ a {
   color: #00B7FF;
 }
 
+img {
+  max-width: 100%
+}
+
 div#theme {
   color:green;
   position:fixed;
@@ -30,7 +34,7 @@ div#banner-content {
   font: 34px "Lucida Grande";
 }
 
-form {
+form, div#tag {
   /* Just to center the form on the page */
   margin: 0 auto;
   width: 400px;
@@ -64,10 +68,10 @@ textarea {
   resize: vertical;
 }
 
-.button {
+/*.button {
   /* To position the buttons to the same position of the text fields */
   padding-left: 90px; /* same size as the label elements */
-}
+}*/
 
 button {
   /* This extra magin represent the same space as the space between

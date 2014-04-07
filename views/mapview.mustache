@@ -8,7 +8,7 @@
     <script>
       window.onload = function () {
         //create socket
-        var socket = io.connect('http://bigfoot.ngrok.com');
+        var socket = io.connect('http://arthum.ngrok.com');
         // var socket = io.connect('http://localhost:3000');
 
         socket.on('connect', function () {
@@ -38,7 +38,7 @@
               x_coord =  document.body.scrollTop + ev.clientX;
               y_coord = document.body.scrollLeft + ev.clientY;
               id = String(x_coord) + '-' +String(y_coord)
-              // socket.emit('click', JSON.stringify({pos:{ x: x_coord, y: y_coord}, link: 'http://bigfoot.ngrok.com/tag?id='+id}));
+              // socket.emit('click', JSON.stringify({pos:{ x: x_coord, y: y_coord}, link: 'http://arthum.ngrok.com/tag?id='+id}));
               window.location = '/upload?id='+id;
             }
           }
@@ -47,16 +47,14 @@
         socket.on('initialize', function (obj) {
           console.log('initializing');
           obj = JSON.parse(obj);
-          for (var id in obj) {
-            console.log('initialize: '+id+ ' -- '+obj[id]);
-            //TODO: figure this out
-            move(id, obj[id].pos, obj[id].link);
+          for (var i = 0; i < obj.length; i++) {
+            move(obj[i].pos, '/tag?id='+obj[i].id);
           }
         });
 
         socket.on('position', function (obj) {
           obj = JSON.parse(obj);
-          move(obj.id, obj.pos, obj.link);
+          move(obj.pos, obj.link);
         });
 
         socket.on('disconnect', function (obj) {
@@ -66,19 +64,15 @@
           tag.parentNode.removeChild(tag);
         });
 
-        function move (id, pos, link) {
-          var tag = document.getElementById('tag-'+id);
+        function move (pos, link) {
+          var img = document.createElement('img');
+          tag = document.createElement('a');
+          tag.href = link;
+          tag.style.position = 'absolute';
+          img.src = '/images/doge.png';
+          tag.appendChild(img);
+          document.body.appendChild(tag);
 
-          if (!tag) {
-            var img = document.createElement('img');
-            tag = document.createElement('a');
-            tag.href = link;
-            tag.id = 'tag-'+id;
-            tag.style.position = 'absolute';
-            img.src = '/images/doge.png';
-            tag.appendChild(img);
-            document.body.appendChild(tag);
-          }
           tag.style.left = pos.x -9 + 'px';
           tag.style.top = pos.y - 9 + 'px';
         }

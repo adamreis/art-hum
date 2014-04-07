@@ -42,16 +42,26 @@ mongoose.connect('mongodb://localhost/arthum');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
+
 db.once('open', function () {
   console.log('db open!');
-
+});
   var mapSchema = mongoose.Schema({
-    // _id: mongoose.Schema.Types.ObjectId,
+    // id: String,
     theme: String,
     tags: []
   });
 
+  var tagSchema = mongoose.Schema({
+    id: String,
+    theme: String,
+    picture: String,
+    description: String,
+    pos: {x: Number, y: Number}
+  });
+
   var Map = mongoose.model('Map', mapSchema);
+  var Tag = mongoose.model('Tag', tagSchema);
   // var map = new Map({
   //   // _id:1,
   //   theme:'Leisure',
@@ -62,8 +72,12 @@ db.once('open', function () {
   //   if (err) return console.error(err);
   //   console.log('save for map with theme ' + map.theme + ' successful');
   // });
-});
 
+
+var map = new Map({
+  theme: '',
+  tags: []
+});
 
 /**
  * Serve my code
@@ -74,7 +88,26 @@ app.get('/', function (req, res, next){
 });
 
 app.get('/map', function (req, res, next){
-  res.render('mapview.mustache', {theme: req.query.theme});
+  if (!map.theme && req.query.theme) {
+    map.theme = req.query.theme;
+  }
+  res.render('mapview.mustache', {theme: map.theme});
+});
+
+app.get('/tag', function (req, res, next) {
+  id = req.query.id;
+  var curTag;
+  for (var i = 0; i< map.tags.length; i++) {
+    if (map.tags[i].id == id) {
+      curTag = map.tags[i];
+      break;
+    }
+  }
+  if (!curTag) res.send('invalid tag id');
+  res.render('tagview.mustache', {
+                                  theme: curTag.theme,
+                                  picture: curTag.picture,
+                                  description: curTag.description});
 });
 
 app.get('/upload', function (req, res, next) {
@@ -88,7 +121,7 @@ app.post('/upload', function (req, res, next) {
       message = req.body.message;
   var tempPath = picture.path,
       // targetPath = path.resolve('./public/'+picture.originalFilename);
-      targetPath = __dirname+'/public/'+picture.originalFilename;
+      targetPath = __dirname+'/public/uploads/'+encodeURI(picture.originalFilename);
   fs.rename(tempPath, targetPath, function (err) {
     if (err) {
       console.log('error inside fs.rename');
@@ -96,8 +129,22 @@ app.post('/upload', function (req, res, next) {
     }
     console.log('Upload completed!');
   });
-  res.redirect(200, '/map');
 
+  var coords = id.split('-').map(function (item) {
+    return parseInt(item, 10);
+  });
+
+  var tag = new Tag({
+    id: id,
+    theme: map.theme,
+    picture: '/uploads/'+encodeURI(picture.originalFilename),
+    description: message,
+    pos: {x: coords[0], y: coords[1]}
+  });
+  map.tags.push(tag);
+
+  io.sockets.emit('position', JSON.stringify({pos:tag.pos, link: '/tag?id='+tag.id}))
+  res.redirect(200, '/map');
 });
 
 // app.get('/uploadform.html', function (req, res, next) {
@@ -108,28 +155,30 @@ app.post('/upload', function (req, res, next) {
  * Socket.IO stuff
  */
 
-var positions = {},
-    total = 0;
+// var positions = {},
+//     total = 0;
+var total = 0;
 
 io.sockets.on('connection', function(socket) {
   // send everyone's positions
-  socket.emit('initialize', JSON.stringify(positions));
+  console.log('about to send all tags: '+JSON.stringify(map.tags));
+  socket.emit('initialize', JSON.stringify(map.tags));
 
   // give the socket an id
   socket.id = ++total;
   console.log('connection # '+socket.id);
-
-  socket.on('click', function(msg) {
-    msg = JSON.parse(msg);
-    positions[socket.id] = msg;
-    io.sockets.emit('position', JSON.stringify({pos: msg.pos, id: socket.id, link: msg.link}));
-  });
-
-  socket.on('disconnect', function () {
-    console.log('connection # ' + socket.id + ' closed');
-    delete positions[socket.id];
-    socket.broadcast.emit('disconnect', JSON.stringify({ id: socket.id}));
-  });
+  //
+  // socket.on('click', function(msg) {
+  //   msg = JSON.parse(msg);
+  //   positions[socket.id] = msg;
+  //   io.sockets.emit('position', JSON.stringify({pos: msg.pos, id: socket.id, link: msg.link}));
+  // });
+  //
+  // socket.on('disconnect', function () {
+  //   console.log('connection # ' + socket.id + ' closed');
+  //   delete positions[socket.id];
+  //   socket.broadcast.emit('disconnect', JSON.stringify({ id: socket.id}));
+  // });
 
 });
 
