@@ -21,10 +21,33 @@ div#banner {
  background-color: rgba(155,155,155,0.5);
  width: 100%;
 }
+
 div#banner-content {
   width: 800px;
   margin: 0 auto;
   padding: 10px;
   text-align: center;
   font: 34px "Lucida Grande";
+}
+
+form {
+  /* Just to center the form on the page */
+  margin: 0 auto;
+  width: 400px;
+
+  /* To see the limits of the form */
+  padding: 1em;
+  border: 1px solid #CCC;
+  border-radius: 1em;
+}
+
+input {
+  /* To give the same size to all text field */
+  width: 300px;
+
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+
+  /* To harmonize the look & feel of text field border */
+  border: 1px solid #999;
 }
