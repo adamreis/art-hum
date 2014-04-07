@@ -3,8 +3,91 @@
   <head>
     <title>Art Hum Thing</title>
     <link rel="stylesheet" href="/stylesheets/style.css" type="text/css" media="screen" charset="utf-8" />
+    <script src='/socket.io/socket.io.js'></script>
+    <script>
+      window.onload = function () {
+        //create socket
+        var socket = io.connect('http://bigfoot.ngrok.com');
+        // var socket = io.connect('http://localhost:3000');
+
+        socket.on('connect', function () {
+          if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+            window.addEventListener('touchstart', function(ev) {
+              if (ev.touches.length == 1) {
+                var touch = ev.touches[0];
+                socket.emit('click', JSON.stringify({ x: touch.pageX, y: touch.pageY}));
+              }
+            });
+
+            //
+            // window.addEventListener('touchend', function(ev) {
+            //   if (ev.touches.length == 1) {
+            //     var touch = ev.touches[0],
+            //     if (Math.abs(touchStart[0]-touch.pageX)<10 && Math.abs(touchStart[1]-touch.pageY)<10) {
+            //       socket.emit('click', JSON.stringify({ x: touch.pageX, y: touch.pageY}));
+            //     }
+            //   }
+            // });
+
+          } else {
+            document.onclick = function (ev) {
+              console.log('emitting click');
+              // background = document.getElementById("background");
+              scrollTop =  document.body.scrollTop;
+              scrollLeft = document.body.scrollLeft;
+              socket.emit('click', JSON.stringify({ x: ev.clientX + scrollLeft, y: ev.clientY + scrollTop}));
+            }
+          }
+        });
+
+        socket.on('initialize', function (obj) {
+          console.log('initializing');
+          obj = JSON.parse(obj);
+          for (var id in obj) {
+            console.log('initialize: '+id+ ' -- '+obj[id]);
+            //TODO: figure this out
+            move(id, obj[id]);
+          }
+        });
+
+        socket.on('position', function (obj) {
+          obj = JSON.parse(obj);
+          move(obj.id, obj.pos);
+        });
+
+        socket.on('disconnect', function (obj) {
+          id = JSON.parse(obj).id;
+          console.log('removing object # ' + id);
+          var cursor = document.getElementById('cursor-'+id);
+          cursor.parentNode.removeChild(cursor);
+        });
+
+        function move (id, pos) {
+          var cursor = document.getElementById('cursor-'+id);
+          if (!cursor) {
+            cursor = document.createElement('img');
+            cursor.id = 'cursor-'+id;
+            cursor.src = '/images/doge.png';
+            cursor.style.position = 'absolute';
+            // document.getElementById('background').appendChild(cursor);
+            document.body.appendChild(cursor);
+          }
+          cursor.style.left = pos.x -9 + 'px';
+          cursor.style.top = pos.y - 9 + 'px';
+        }
+      }
+    </script>
   </head>
   <body>
-    Welcome to {{title}}!
+    <div id="banner">
+      <div id="banner-content">
+        Labor
+      </div>
+    </div>
+
+    <div id="background" style="overflow:auto;">
+      <img id="map" src="/images/map.png" width="100%">
+    </div>
+
   </body>
 </html>

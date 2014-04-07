@@ -6,3 +6,25 @@ body {
 a {
   color: #00B7FF;
 }
+
+div#theme {
+  color:green;
+  position:fixed;
+  top:30px;
+  right:5px;
+}
+
+div#banner {
+ position: fixed;
+ top: 0;
+ left: 0;
+ background-color: rgba(155,155,155,0.5);
+ width: 100%;
+}
+div#banner-content {
+  width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  text-align: center;
+  font: 34px "Lucida Grande";
+}
