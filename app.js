@@ -9,7 +9,9 @@ var express = require('express'),
     io = require('socket.io').listen(server);
     path = require('path'),
     mustache = require('mustache-express'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    path = require('path'),
+    fs = require('fs');
 
 app.configure(function() {
   // all environments
@@ -80,11 +82,22 @@ app.get('/upload', function (req, res, next) {
 });
 
 app.post('/upload', function (req, res, next) {
+  console.log('received post');
   var id = req.body.id,
       picture = req.files.picture,
       message = req.body.message;
-  console.log('upload seems to have worked.  Picture:');
-  console.log(picture);
+  var tempPath = picture.path,
+      // targetPath = path.resolve('./public/'+picture.originalFilename);
+      targetPath = __dirname+'/public/'+picture.originalFilename;
+  fs.rename(tempPath, targetPath, function (err) {
+    if (err) {
+      console.log('error inside fs.rename');
+      throw err;
+    }
+    console.log('Upload completed!');
+  });
+  res.redirect(200, '/map');
+
 });
 
 // app.get('/uploadform.html', function (req, res, next) {
