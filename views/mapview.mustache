@@ -16,7 +16,9 @@
             window.addEventListener('touchstart', function(ev) {
               if (ev.touches.length == 1) {
                 var touch = ev.touches[0];
-                socket.emit('click', JSON.stringify({ x: touch.pageX, y: touch.pageY}));
+                id = String(touch.pageX) + '-' + String(touch.pageY);
+                // socket.emit('click', JSON.stringify({ x: touch.pageX, y: touch.pageY}));
+                window.location = '/upload?id='+id;
               }
             });
 

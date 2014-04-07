@@ -57,6 +57,9 @@ db.once('open', function () {
     theme: String,
     picture: String,
     description: String,
+    name: String,
+    year: String,
+    artist: String,
     pos: {x: Number, y: Number}
   });
 
@@ -84,7 +87,9 @@ var map = new Map({
  */
 
 app.get('/', function (req, res, next){
-  res.render('index.mustache', { title: 'Express' });
+  if (!map.theme)
+    res.render('index.mustache', { title: 'Express' });
+  res.render('redirect.mustache');
 });
 
 app.get('/map', function (req, res, next){
@@ -107,6 +112,9 @@ app.get('/tag', function (req, res, next) {
   res.render('tagview.mustache', {
                                   theme: curTag.theme,
                                   picture: curTag.picture,
+                                  name: curTag.name,
+                                  artist: curTag.artist,
+                                  year: curTag.year,
                                   description: curTag.description});
 });
 
@@ -118,7 +126,10 @@ app.post('/upload', function (req, res, next) {
   console.log('received post');
   var id = req.body.id,
       picture = req.files.picture,
-      message = req.body.message;
+      message = req.body.message,
+      year = req.body.year,
+      name = req.body.name,
+      artist = req.body.artist;
   var tempPath = picture.path,
       // targetPath = path.resolve('./public/'+picture.originalFilename);
       targetPath = __dirname+'/public/uploads/'+encodeURI(picture.originalFilename);
@@ -139,12 +150,15 @@ app.post('/upload', function (req, res, next) {
     theme: map.theme,
     picture: '/uploads/'+encodeURI(picture.originalFilename),
     description: message,
+    name: name,
+    year: year,
+    artist: artist,
     pos: {x: coords[0], y: coords[1]}
   });
   map.tags.push(tag);
 
   io.sockets.emit('position', JSON.stringify({pos:tag.pos, link: '/tag?id='+tag.id}))
-  res.redirect(200, '/map');
+  res.render('redirect.mustache', {url: '/map'});
 });
 
 // app.get('/uploadform.html', function (req, res, next) {
