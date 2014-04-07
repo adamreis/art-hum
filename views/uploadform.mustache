@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Art Hum Thing</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" type="text/css" media="screen" charset="utf-8" />
+  </head>
+  <body>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <div>
+        <label for="tag-id">ID:</label>
+        <input type="text" id="tag-id" name="id" value={{id}} />
+      </div>
+      <div>
+        <label for="file">Picture:</label>
+        <input type="file" id="file" name="picture" />
+      </div>
+      <div>
+        <label for="msg">Message:</label>
+        <textarea id="msg" name="message" placeholder="How does this work relate to the theme?"></textarea>
+      </div>
+
+      <div class="button">
+        <button type="submit">Upload new tag</button>
+      </div>
+    </form>
+  </body>
+</html>

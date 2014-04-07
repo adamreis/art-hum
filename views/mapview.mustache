@@ -38,7 +38,8 @@
               x_coord =  document.body.scrollTop + ev.clientX;
               y_coord = document.body.scrollLeft + ev.clientY;
               id = String(x_coord) + '-' +String(y_coord)
-              socket.emit('click', JSON.stringify({pos:{ x: x_coord, y: y_coord}, link: 'http://bigfoot.ngrok.com/tag?id='+id}));
+              // socket.emit('click', JSON.stringify({pos:{ x: x_coord, y: y_coord}, link: 'http://bigfoot.ngrok.com/tag?id='+id}));
+              window.location = '/upload?id='+id;
             }
           }
         });

@@ -18,8 +18,7 @@ app.configure(function() {
   app.engine('mustache', mustache());
   // app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.json());
-  app.use(express.urlencoded());
+  app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.favicon(path.join(__dirname,'/public/images/favicon.ico')));
@@ -74,6 +73,18 @@ app.get('/', function (req, res, next){
 
 app.get('/map', function (req, res, next){
   res.render('mapview.mustache', {theme: req.query.theme});
+});
+
+app.get('/upload', function (req, res, next) {
+  res.render('uploadform.mustache', {id: req.query.id});
+});
+
+app.post('/upload', function (req, res, next) {
+  var id = req.body.id,
+      picture = req.files.picture,
+      message = req.body.message;
+  console.log('upload seems to have worked.  Picture:');
+  console.log(picture);
 });
 
 // app.get('/uploadform.html', function (req, res, next) {
