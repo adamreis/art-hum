@@ -87,9 +87,10 @@ var map = new Map({
  */
 
 app.get('/', function (req, res, next){
-  if (!map.theme)
-    res.render('index.mustache', { title: 'Express' });
-  res.render('redirect.mustache');
+  if (map.theme != '') {
+    res.render('redirect.mustache');
+  }
+  res.render('index.mustache', { title: 'Express' });
 });
 
 app.get('/map', function (req, res, next){
@@ -161,39 +162,21 @@ app.post('/upload', function (req, res, next) {
   res.render('redirect.mustache', {url: '/map'});
 });
 
-// app.get('/uploadform.html', function (req, res, next) {
-//   res.render('uploadform.html');
-// });
 
 /**
  * Socket.IO stuff
  */
 
-// var positions = {},
-//     total = 0;
-var total = 0;
+// var total = 0;
 
 io.sockets.on('connection', function(socket) {
   // send everyone's positions
-  console.log('about to send all tags: '+JSON.stringify(map.tags));
+  console.log('initializing new connection');
   socket.emit('initialize', JSON.stringify(map.tags));
 
   // give the socket an id
-  socket.id = ++total;
-  console.log('connection # '+socket.id);
-  //
-  // socket.on('click', function(msg) {
-  //   msg = JSON.parse(msg);
-  //   positions[socket.id] = msg;
-  //   io.sockets.emit('position', JSON.stringify({pos: msg.pos, id: socket.id, link: msg.link}));
-  // });
-  //
-  // socket.on('disconnect', function () {
-  //   console.log('connection # ' + socket.id + ' closed');
-  //   delete positions[socket.id];
-  //   socket.broadcast.emit('disconnect', JSON.stringify({ id: socket.id}));
-  // });
-
+  // socket.id = ++total;
+  // console.log('connection # '+socket.id);
 });
 
 

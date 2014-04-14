@@ -17,6 +17,8 @@
               if (ev.touches.length == 1) {
                 var touch = ev.touches[0];
                 id = String(touch.pageX) + '-' + String(touch.pageY);
+                // move({x:touch.pageX, y:touch.pageY}, '/upload?id='+id);
+                // move({x:50, y:50}, '/');
                 // socket.emit('click', JSON.stringify({ x: touch.pageX, y: touch.pageY}));
                 window.location = '/upload?id='+id;
               }
@@ -39,7 +41,8 @@
               // background = document.getElementById("background");
               x_coord =  document.body.scrollTop + ev.clientX;
               y_coord = document.body.scrollLeft + ev.clientY;
-              id = String(x_coord) + '-' +String(y_coord)
+              id = String(x_coord) + '-' +String(y_coord);
+              // move({x:x_coord, y:y_coord}, '/upload?id='+id);
               // socket.emit('click', JSON.stringify({pos:{ x: x_coord, y: y_coord}, link: 'http://arthum.ngrok.com/tag?id='+id}));
               window.location = '/upload?id='+id;
             }
@@ -71,12 +74,12 @@
           tag = document.createElement('a');
           tag.href = link;
           tag.style.position = 'absolute';
-          img.src = '/images/doge.png';
+          img.src = '/images/pin.png';
           tag.appendChild(img);
           document.body.appendChild(tag);
 
-          tag.style.left = pos.x -9 + 'px';
-          tag.style.top = pos.y - 9 + 'px';
+          tag.style.left = pos.x - 16 + 'px';
+          tag.style.top = pos.y - 26 + 'px';
         }
 
 
